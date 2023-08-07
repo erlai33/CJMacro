@@ -1,0 +1,265 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CJMacro华北客户地图</title>
+    <style type="text/css">
+        html,body{
+            height:100%;
+        }
+        #map{
+            width:100%;
+            height:100%;
+        }
+        .label{       /*标注样式*/
+            color:white;
+            background-color:black;
+            height:auto;
+            min-width:80px;
+            white-space:nowrap;
+            font-size:14px;
+            padding:5px;
+            line-height:18px;
+        }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=3.0&ak=TUnsbxODadlc80jhiVIRGI5iXnMuXBno"></script>
+    <script type="text/javascript">
+        //建立地图
+        var map=new BMap.Map("map");
+        map.centerAndZoom(new BMap.Point(116.404, 39.915), 11);
+        map.enableScrollWheelZoom();
+        //创建地理编码实例
+        var myGeo = new BMap.Geocoder();
+
+        //待解析地址数组和对应的名称数组
+        var addresses = ["西城区金融大街5号新盛大厦",
+            "西城区北京市西城区月坛北街2号月坛大厦A座20层",
+            "西城区金融大街17号中国人寿中心",
+            "西城区盈泰商务中心2号楼12F",
+            "西城区金融大街16号中国人寿广场A座8层",
+            "海淀区国际财经中心D座14F",
+            "东城区宣武门外大街10号庄胜广场中央办公楼南翼13A",
+            "朝阳区北四环中路27号盘古大观写字楼11层",
+            "西城区丰汇园11号楼丰汇时代大厦南座/",
+            "西城区月坛南街一号院七号楼10F",
+            "西城区德胜门外大街125号（德胜尚城B座）3层",
+            "西城区南纬路35号北京银行大厦3F",
+            "海淀区杏石口路9号合众大厦4F",
+            "西城区平安里西大街28号中海国际中心6F/19F",
+            "西城区武定侯街2号泰康国际大厦",
+            "海淀区北三环西路99号西海国际商业中心20F/一座3F",
+            "东城区东长安街1号东方广场东方经贸城中二办公楼15层",
+            "西城区平安里西大街28号中海国际中心6F/19F",
+            "丰台区金泽路161号院1号楼 远洋锐中心26层",
+            "朝阳区建国门外大街甲12号新华保险大厦17层/19层",
+            "朝阳区建国门外大街甲12号新华保险大厦17层/19层",
+            "东城区朝阳门北大街1号新保利大厦22层",
+            "朝阳区建国门外大街21号国际俱乐部大厦C座",
+            "朝阳区光华路甲14号诺安大厦9层",
+            "朝阳区针织路23号中国人寿金融中心6层",
+            "朝阳区北京市朝阳区安立路30号仰山公园东一门8号楼a栋",
+            "西城区西直门南大街国英园9号",
+            "朝阳区安立路80号马可孛罗大厦1105室",
+            "海淀区西直门外大街168号腾达大厦16层",
+            "朝阳区建国门外大街21号国际俱乐部大厦C座",
+            "西城区金融大街7号英蓝国际金融中心16层",
+            "海淀区友谊宾馆颐园写字楼",
+            "西城区复兴门外大街A2号中化大厦16层",
+            "朝阳区建国门外大街6号安邦金融中心",
+            "东城区东直门南大街5号中青旅大厦13层",
+			"西城区丰盛胡同28号太平洋保险大厦A座12层",
+			"西城区金融大街11号中国再保险大厦8层和11层",
+			"朝阳区景辉街16号院1号楼泰康集团大厦",
+			"西城区金融大街12号中国人寿广场B座8层",
+			"西城区平安里西大街26号新时代大厦9层",
+			"西城区武定侯街2号泰康国际大厦",
+			"朝阳区景辉街16号院1号楼泰康集团大厦",
+			"朝阳区景辉街16号院1号楼泰康集团大厦",
+			"海淀区彩和坊路6号朔黄发展大厦",
+			"朝阳区京顺路5号1959时间里A8",
+			"丰台区远洋锐中心9层",
+			"东城区东长安街1号东方广场东方经贸城中二办公楼15层",
+			"东城区和平里中街乙16号",
+			"朝阳区中建财富国际中心3层",
+			"海淀区北三环西路99号西海国际商业中心20F/一座3F",
+			"环球金融中心东塔7层/环球金融中心西塔22楼",
+			"朝阳区阳光保险金融中心38层",
+			"西城区金融街国际11层",
+			"朝阳区东三环中路5号楼财富金融中心58层",
+			"东城区建国门内大街28号民生金融中心/民生金融中心B座7层/民生金融中心B座12楼",
+			"海淀区丹棱街3号中国电子大厦B座16层",
+			"西城区丰汇园11号楼丰汇时代大厦南座",
+		    "西城区西长安街88号中国人保大厦5层/8层",
+			"海淀区知春路7号致真大厦A座10层",
+			"东城区建国门内大街28号民生金融中心/民生金融中心B座7层/民生金融中心B座12楼",
+			"西城区金融大街6号金嘉大厦",
+			"西城区金融大街35号国际企业大厦A座10楼",
+			"东城区建国门内大街28号民生金融中心/民生金融中心B座7层/民生金融中心B座12楼",
+			"东城区建国门北大街8号",
+			"西城区金融大街17号中国人寿中心",
+			"西城区金融大街5号（新盛大厦）4楼",
+			"朝阳区建国门外大街1号国贸大厦A座39A层04-13单元",
+			"海淀区西三环北路100号光耀东方中心A座6层",
+			"丰台区丰台北路18号金唐中心A座8层",
+			"西城区西长安街88号中国人保大厦5层/8层",
+			"朝阳区建国门外大街2号院2号楼28层",
+			"朝阳区朝阳门北大街18号中国人保寿险大厦25层"
+        ];
+
+		var names = [
+			"中邮理财/工银瑞信", //1
+			"天弘基金",//2
+			"北京银行/国寿资产",//3
+			"国寿安保基金",//4
+			"国寿股份",//5
+			"国金通用基金",//6
+			"益民基金",//7
+			"方正富邦",//8
+			"社保理事会/人保健康险",//9
+			"华夏基金",//10
+			"泓徳基金",//11
+			"中加基金",//12
+			"合众资产",//13
+			"华商基金/东兴基金",//14
+			"泰康基金/南华基金",//15
+			"江信基金/华夏久盈",//16
+			"银华基金",//17
+			"华商基金/东兴基金",//18
+			"东方基金",//19
+			"新华养老/新华资产",//20
+			"新华养老/新华资产",//21
+			"中投海外",//23
+			"嘉实基金",//24
+			"诺安基金",//25
+			"宏利基金",//26
+			"九泰基金",//27
+			"国开泰富",//28
+			"中航基金",//29
+			"汇泉基金",//30
+			"嘉实基金",//31
+			"建信基金",//32
+			"民生加银",//32
+			"鹏扬基金",//33
+			"大家资管",//34
+			"汇安基金",//35
+			"光大永明",//36
+			"中再资管",//37
+			"泰康资产",//38
+			"国寿养老",//39
+			"新华基金",//40
+			"泰康基金/南华基金",//41
+			"泰康资产/养老/人寿",//42
+			"泰康资产/养老/人寿",//43
+			"三峡资本",//44
+			"中科沃土",//45
+			"兴合基金",//46
+			"银华基金",//47
+			"中邮基金",//48
+			"长盛基金",//49
+			"江信基金/华夏久盈",//50
+			"天安人寿/英大基金",//51
+			"阳光保险",
+			"光大理财",//53
+			"格林基金",//54
+			"华夏理财/农银理财/英大保险",//55
+			"新沃基金",//56
+			"社保理事会/人保健康险",//57
+			"人保养老/人保基金",//58
+			"建信养老",//59
+			"华夏理财/农银理财/英大保险",//60
+			"工银理财",//61
+			"中银理财",//62
+			"华夏理财/农银理财/英大保险",//63
+			"民生理财",//64
+			"北京银行/国寿资产",//65
+			"中邮理财/工银瑞信",//66
+			"安联资产",//67
+			"北信瑞丰",//68
+			"兴华基金",//69
+			"人保养老/人保基金",//70
+			"人保财险",//71
+			"人保寿险"];//72
+		
+		        var labelChanges = {
+            "阳光保险": { offsetX: -20, offsetY: 25 },
+			"新华养老/新华资产": { offsetX: -60, offsetY: 30 },// 在这里添加其他需要更改位置的标签及其偏移量
+			"格林基金": { offsetX: 20, offsetY: 0 },
+			"安联资产": { offsetX: 20, offsetY: 0 },
+			"宏利基金": { offsetX: 20, offsetY: 0 },
+			"民生加银": { offsetX: 20, offsetY: 0 },
+			"新沃基金": { offsetX: 20, offsetY: 0 },
+			"中投海外": { offsetX: -50, offsetY: 0 },
+			"国金通用基金": { offsetX: -30, offsetY: -15 },
+			"国寿股份": { offsetX: -55, offsetY: 0 },
+			"泰康基金/南华基金": { offsetX: 15, offsetY: 0 },
+			"光大理财": { offsetX: -50, offsetY: 10 },
+			"中邮理财/工银瑞信": { offsetX: 10, offsetY: 25 },
+			"工银理财": { offsetX: 20, offsetY: 0 },
+			"新华基金": { offsetX: 20, offsetY: 0 },
+			"鹏扬基金": { offsetX: -10, offsetY: 25 },
+			"人保养老/人保基金": { offsetX: -10, offsetY: 25 },
+			"益民基金": { offsetX: -10, offsetY: 25 },
+			
+		};
+
+        for(var i in addresses){
+            //使用闭包，将 i 的值与每个函数实例捆绑起来
+            (function(i){
+                //地址解析
+                myGeo.getPoint(addresses[i], function(point){
+                    if (point) {
+                        //在地图上设置标注
+                        var marker = new BMap.Marker(point);
+                        var labelOffset = labelChanges[names[i]];
+                        if (labelOffset) {
+                            var label = new BMap.Label(names[i], { offset: new BMap.Size(labelOffset.offsetX, labelOffset.offsetY) });
+                            label.setStyle({                         //设置标注样式
+                                borderColor:"#808080",
+                                color:"#333",
+                                fontWeight:"bold",
+                                cursor:"pointer"
+                            });
+                            marker.setLabel(label);                 //设置标注名称
+                            map.addOverlay(marker);                 //将标注添加到地图中
+
+                            //点击标注弹出信息窗口
+                            var infoWindow=new BMap.InfoWindow(names[i] + ' - ' + addresses[i], {offset: new BMap.Size(0,-20), width: 200});
+                            marker.addEventListener('click',function(e){
+                                var p = e.target;
+                                var point = new BMap.Point(p.getPosition().lng, p.getPosition().lat);
+                                infoWindow.setContent(names[i] + ' - ' + addresses[i]);
+                                map.openInfoWindow(infoWindow,point);
+                            });
+                        } else {
+                            var label = new BMap.Label(names[i], { offset: new BMap.Size(-20, -20) });
+                            label.setStyle({                         //设置标注样式
+                                borderColor:"#808080",
+                                color:"#333",
+                                fontWeight:"bold",
+                                cursor:"pointer"
+                            });
+                            marker.setLabel(label);                 //设置标注名称
+                            map.addOverlay(marker);                 //将标注添加到地图中
+
+                            //点击标注弹出信息窗口
+                            var infoWindow=new BMap.InfoWindow(names[i] + ' - ' + addresses[i], {offset: new BMap.Size(0,-20), width: 200});
+                            marker.addEventListener('click',function(e){
+                                var p = e.target;
+                                var point = new BMap.Point(p.getPosition().lng, p.getPosition().lat);
+                                infoWindow.setContent(names[i] + ' - ' + addresses[i]);
+                                map.openInfoWindow(infoWindow,point);
+                            });
+                        }
+                    }
+                }, "北京市");
+            })(i);
+        }
+    </script>
+</body>
+</html>
+```
+

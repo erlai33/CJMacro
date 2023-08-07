@@ -1,1 +1,154 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>地图展示</title>
+    <style type="text/css">
+        html,body{
+            height:100%;
+        }
+        #map{
+            width:100%;
+            height:100%;
+        }
+        .label{       /*标注样式*/
+            color:white;
+            background-color:black;
+            height:auto;
+            min-width:80px;
+            white-space:nowrap;
+            font-size:14px;
+            padding:5px;
+            line-height:18px;
+        }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=3.0&ak=TUnsbxODadlc80jhiVIRGI5iXnMuXBno"></script>
+    <script type="text/javascript">
+        //建立地图
+        var map = new BMap.Map("map");
+        map.centerAndZoom(new BMap.Point(121.48, 31.22), 11);
+        map.enableScrollWheelZoom();
 
+        //创建地理编码实例
+        var myGeo = new BMap.Geocoder();
+
+        //待解析地址数组和对应的名称数组
+
+		var data = [
+			{ address: "浦东新区世纪汇", name: "富国基金/人保/长江资管" },
+			{ address: "浦东新区世纪大道100号上海环球金融中心38楼/58楼", name: "太保/华宝基金" },
+			{ address: "世纪大道世纪汇1座22层/27层", name: "人保/长江资管" },
+			{ address: "浦东新区世纪大道8号国金二期9楼/22楼/31楼",name: "国海富兰克林/交银施罗德/华安基金"},
+			{ address: "浦东新区银城中路68号时代金融中心15楼/30楼/41楼",name: "长信基金/中海基金/财通基金"},
+			{ address: "浦东新区世纪大道1568号中建大厦12楼/29楼",name: "银河基金/富安达"},
+			{ address: "浦东新区浦电路360号陆家嘴投资大厦9楼",name: "万家基金"},
+			{ address: "浦东新区芳甸路1155号浦东嘉里城办公楼22楼/28楼/36楼/42-43楼", name: "惠升基金/兴证全球/华泰柏瑞/睿远基金"},
+			{ address: "黄浦区外马路728号汇添富大厦",name: "汇添富"},
+			{ address: "黄浦区外马路108号11楼",name: "东方资管"},
+			{ address: "浦东新区国金中心一期汇丰银行大楼9楼/17楼",name: "信诚基金/汇丰晋信"},
+			{ address: "浦东新区芳甸路1088号紫竹国际大厦16层",name: "长安基金"},
+			{ address: "浦东新区银城中路488号太平金融大厦7层/23层/42层",name: "太平基金/太平养老/太平资产"},
+			{ address: "黄浦区中山东二路600号外滩金融中心S1栋21F/S1栋30层04-07单元/N3座7层",name: "德邦基金/弘毅远方/光大保德信"},
+			{ address: "浦东新区丁香路778号丁香国际大厦西塔7F",name: "淳厚基金"},
+			{ address: "浦东新区陆家嘴环路1333号平安金融大厦24楼/29-31楼",name: "平安养老/平安资管"},
+			{ address: "浦东新区博成路1101号华泰金融大厦8层/9层",name: "华泰资产/华泰保兴"},
+			{ address: "浦东新区耀体路276号3号楼9楼",name: "西部利得"},
+			{ address: "浦东新区银城路200号中银大厦11F",name: "中银基金"},
+			{ address: "浦东新区银城路9号农业银行大厦51层",name: "农银汇理"},
+			{ address: "浦东新区世纪大道210号21世纪中心大厦22楼",name: "永赢基金"},
+			{ address: "浦东新区富城路99号震旦大厦18楼/24楼",name: "诺德基金/上投摩根"},
+			{ address: "浦东新区陆家嘴花园石桥路33号花旗集团大厦3608室",name: "金元顺安"},
+			{ address: "浦东新区陆家嘴银城中路501号上海中心大厦8楼",name: "中欧基金"},
+			{ address: "虹口区公平路18号8号楼嘉昱大厦16-19层",name: "国泰基金"},
+			{ address: "浦东新区银城路167号兴业银行大厦13楼",name: "兴业基金"},
+			{ address: "浦东新区银城路117号瑞明大厦9楼",name: "东吴基金"},
+			{ address: "徐汇区复兴西路159号",name: "天治基金"},
+			{ address: "浦东新区杨高南路428号由由世纪广场1号楼3楼",name: "湘财基金"},
+			{ address: "浦东新区陆家嘴西路万向大厦10楼",name: "浙商基金"},
+			{ address: "浦东新区东亚银行大厦38F",name: "海富通"},
+			{ address: "浦东新区滨江大道5189号陆家嘴滨江中心S2座6楼",name: "浦银安盛"},
+			{ address: "浦东新区星展银行大厦9楼/11楼/21楼",name: "国联安/中庚基金/嘉实基金（上海）"},
+			{ address: "杨浦区秦皇岛路32号A楼",name: "嘉合基金"},
+			{ address: "静安区中山北路909号12层", name: "鑫元基金"},
+			{ address: "浦东新区滨江大道5129号N1座华福证券大楼5楼", name: "兴银基金" },
+			{ address: "浦东新区浦东南路256号 华夏银行大厦37层", name: "泰信基金" },
+			{ address: "浦东新区陆家嘴基金大厦9F/15F/19F", name: "上银基金/东海基金/圆信永丰" },
+			{ address: "黄浦区中山南路100号金外滩国际广场11层", name: "申万菱信" },
+			{ address: "浦东新区栖霞路18号富汇大厦A座3F", name: "华富基金" },
+			{ address: "黄浦区延安东一路1号", name: "凯石基金" },
+			{ address: "浦东新区龙阳路2277号永达国际大厦2102室", name: "恒越基金" }];
+
+        
+
+            var labelChanges = {
+			"惠升基金/兴证全球/华泰柏瑞/睿远基金": { offsetX: 20, offsetY: 0 },
+			"天治基金": { offsetX: 20, offsetY: 0 },
+			"银河基金/富安达": { offsetX: 20, offsetY: 0 },
+			"长信基金/中海基金/财通基金": { offsetX: 20, offsetY: 0 },
+			"海富通": { offsetX: -5, offsetY: 20 },
+			"国海富兰克林/交银施罗德/华安基金": { offsetX: 20, offsetY: 0 },
+			"中欧基金": { offsetX: 0, offsetY: 20 },
+			"金元顺安": { offsetX: -10, offsetY: 20 },
+			"中银基金": { offsetX: 30, offsetY: 10 },
+			"太保/华宝基金": { offsetX: 0, offsetY: 20 },
+			"太平基金/太平养老/太平资产": { offsetX: -30, offsetY: -20 },
+			"鑫元基金": { offsetX: 20, offsetY: 5 },
+			"人保/长江资管": { offsetX: 30, offsetY: 0 },
+			"东方资管": { offsetX: 20, offsetY: 0 },
+			"信诚基金/汇丰晋信": { offsetX: -30, offsetY: -20 },
+			"淳厚基金": { offsetX: 20, offsetY: 5 },
+			"湘财基金": { offsetX: 20, offsetY: 5 },
+			"万家基金": { offsetX: -50, offsetY: 0 },
+			"上银基金/东海基金/圆信永丰": { offsetX: -30, offsetY: -20 },
+            // 其他标签及其偏移量...
+        };
+
+        // 地址解析函数
+        function getAddressPoint(address, callback) {
+            var geocoder = new BMap.Geocoder();
+            geocoder.getPoint(address, function(point) {
+                callback(point);
+            });
+        }
+
+        // 添加标注和标签，并处理标签位置
+        function addMarkerWithLabel(dataItem) {
+            getAddressPoint(dataItem.address, function (point) {
+                if (point) {
+                    // 在地图上设置标注
+                    var marker = new BMap.Marker(point);
+
+                    // 根据 labelChanges 对象获取对应的偏移量
+                    var labelChange = labelChanges[dataItem.name] || { offsetX: -20, offsetY: -20 };
+                    var label = new BMap.Label(dataItem.name, { offset: new BMap.Size(labelChange.offsetX, labelChange.offsetY) });
+                    label.setStyle({
+                        borderColor: "#808080",
+                        color: "#333",
+                        fontWeight: "bold",
+                        cursor: "pointer"
+                    });
+
+                    // 将标注和标签添加到地图
+                    marker.setLabel(label);
+                    map.addOverlay(marker);
+
+                    // 点击标注弹出信息窗口
+                    var infoWindow = new BMap.InfoWindow(dataItem.name + ' - ' + dataItem.address, { offset: new BMap.Size(0, -20), width: 200 });
+                    marker.addEventListener('click', function (e) {
+                        var p = e.target;
+                        var point = new BMap.Point(p.getPosition().lng, p.getPosition().lat);
+                        infoWindow.setContent(dataItem.name + ' - ' + dataItem.address);
+                        map.openInfoWindow(infoWindow, point);
+                    });
+                }
+            });
+        }
+
+        for (var i = 0; i < data.length; i++) {
+            addMarkerWithLabel(data[i]);
+        }
+    </script>
+</body>
+</html>

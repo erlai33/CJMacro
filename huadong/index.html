@@ -215,30 +215,41 @@
             });
         }
 
+        // 添加标注和标签，并处理标签位置
         function addMarkerWithLabel(dataItem) {
-            if (dataItem.point) {
-                var marker = new BMap.Marker(dataItem.point);
+            getAddressPoint(dataItem.address, function (point) {
+                if (point) {
+                    // 在地图上设置标注
+                    var marker = new BMap.Marker(point);
 
-                var labelChange = labelChanges[dataItem.name] || { offsetX: -20, offsetY: -20 };
-                var label = new BMap.Label(dataItem.name, { offset: new BMap.Size(labelChange.offsetX, labelChange.offsetY) });
-                label.setStyle({
-                    borderColor: "#808080",
-                    color: "#333",
-                    fontWeight: "bold",
-                    cursor: "pointer"
-                });
+                    // 根据 labelChanges 对象获取对应的偏移量
+                    var labelChange = labelChanges[dataItem.name] || { offsetX: -20, offsetY: -20 };
+                    var label = new BMap.Label(dataItem.name, { offset: new BMap.Size(labelChange.offsetX, labelChange.offsetY) });
+                    label.setStyle({
+                        borderColor: "#808080",
+                        color: "#333",
+                        fontWeight: "bold",
+                        cursor: "pointer"
+                    });
 
-                marker.setLabel(label);
-                map.addOverlay(marker);
+                    // 将标注和标签添加到地图
+                    marker.setLabel(label);
+                    map.addOverlay(marker);
 
-                var infoWindow = new BMap.InfoWindow(dataItem.name + ' - ' + dataItem.address, { offset: new BMap.Size(0, -20), width: 200 });
-                marker.addEventListener('click', function (e) {
-                    var p = e.target;
-                    var point = new BMap.Point(p.getPosition().lng, p.getPosition().lat);
-                    infoWindow.setContent(dataItem.name + ' - ' + dataItem.address);
-                    map.openInfoWindow(infoWindow, point);
-                });
-            }
+                    // 点击标注弹出信息窗口
+                    var infoWindow = new BMap.InfoWindow(dataItem.name + ' - ' + dataItem.address, { offset: new BMap.Size(0, -20), width: 200 });
+                    marker.addEventListener('click', function (e) {
+                        var p = e.target;
+                        var point = new BMap.Point(p.getPosition().lng, p.getPosition().lat);
+                        infoWindow.setContent(dataItem.name + ' - ' + dataItem.address);
+                        map.openInfoWindow(infoWindow, point);
+                    });
+                }
+            });
+        }
+
+        for (var i = 0; i < data.length; i++) {
+            addMarkerWithLabel(data[i]);
         }
     </script>
 </body>

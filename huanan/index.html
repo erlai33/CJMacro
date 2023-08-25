@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CJMacro华南客户地图</title>
+    <style type="text/css">
+        html, body {
+            height: 100%;
+        }
+
+        #map {
+            width: 100%;
+            height: 100%;
+        }
+
+        .label {
+            color: white;
+            background-color: black;
+            height: auto;
+            min-width: 80px;
+            white-space: nowrap;
+            font-size: 14px;
+            padding: 5px;
+            line-height: 18px;
+        }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    <script type="text/javascript" src="https://api.map.baidu.com/api?v=3.0&ak=EGmTLfzQaDEmTs6VGedwpRGABmNmO8cW"></script>
+    <script type="text/javascript">
+        var map = new BMap.Map("map");
+        map.centerAndZoom(new BMap.Point(114.0579, 22.5431), 11);
+        map.enableScrollWheelZoom();
+
+        var myGeo = new BMap.Geocoder();
+
+        var data = [
+             { address: "深圳嘉里建设广场3期31楼/1座21层、22层/3座7楼/A栋第二座17楼", name: "易方达基金/景顺长城/华润元大/摩根士丹利华鑫" },
+			{ address: "广州天河区珠江东路30号广州银行大厦42楼", name: "易方达基金" },
+			{ address: "广州海珠区琶洲大道东1号保利国际广场南塔31－33层",name: "广发基金"},
+			{ address: "广州天河区珠江东路28号越秀金融大厦30层",name: "金鹰基金"},
+			{ address: "广州天河区花城大道769号广州嘉昱中心10层",name: "百嘉基金"},
+			{ address: "深圳南山区海德三道1236号大成基金总部大厦5层、27-33层",name: "大成基金"},
+			{ address: "深圳福田区莲花街道福新社区鹏程一路9号广电金融中心38层", name: "长城基金"},
+			{ address: "深圳投行大厦11楼",name: "宝盈基金"},
+			{ address: "深圳福田区益田路5999号基金大厦22、23楼/33楼",name: "博时基金/南方基金"},
+			{ address: "深圳福华三路168号深圳国际商会中心43层",name: "鹏华基金"},
+			{ address: "深圳福田区益田路6009号新世界中心36楼",name: "安信基金"},
+			{ address: "深圳南山区海德三道1066号深创投广场48楼",name: "红土创新"},
+			{ address: "深圳市福田区生命保险大厦23楼",name: "生命保险资管"},
+			{ address: "深圳市南山区华润前海大厦A座37楼",name: "创金合信"},
+			{ address: "深圳市南山区航天科技广场A座28楼",name: "恒大人寿"},
+			{ address: "深圳深南大道4013号兴业银行大厦19-20层",name: "诺安基金"},
+			{ address: "广州珠江新城华夏路10号富力中心2908",name: "诺安基金"},
+			{ address: "深圳市南山区粤海街道科苑南路2666号中国华润大厦（春笋）10层",name: "信达澳亚"},
+			{ address: "深圳市南山区华润前海中心T1栋28F",name: "前海联合基金"},
+			{ address: "深圳市南山区桂湾四路197号前海华润金融中心T1栋（前海人寿大厦）51楼",name: "前海人寿保险"},
+			{ address: "深圳市福田区深南大道7006号万科富春东方大厦12楼",name: "前海开源基金"},
+			{ address: "深圳市福田区深南大道7088号招商银行大厦23层、28层",name: "招商基金"},
+			{ address: "深圳金田路荣超经贸中心46层",name: "国投瑞银"},
+			{ address: "深圳汉唐大厦14层",name: "融通基金"},
+			{ address: "深圳福田区益田路5033号平安金融中心34层",name: "平安基金"},
+			{ address: "深圳福田区八卦岭八卦四路安吉尔大厦24楼",name: "富荣基金"},
+			{ address: "深圳福田区太平金融大厦15楼2单元",name: "金信基金"},
+			{ address: "深圳金田路中洲大厦32楼3202室",name: "中融基金"},
+			{ address: "深圳福田区皇岗路5001号深业上城（南区）T2栋41层",name: "同泰基金"},
+			{ address: "福田区深南大道6008号特区报业大厦西区23层BC单元",name: "东方阿尔法"},
+			{ address: "深圳市前海深港合作区南山街道前海大道前海嘉里商务中心T2座10楼/四期1栋2301",name: "恒生前海基金/红塔红土基金"},
+			{ address: "深圳市福田区皇岗路5001号B座（T2栋）43楼4301",name: "博远基金"},
+			{ address: "深圳市福田区深业上城T2栋703-708", name: "尚正基金"},
+            // ... 添加其他地址数据
+        ];
+
+        var labelChanges = {
+            "招商基金": { offsetX: -20, offsetY: 25 },
+			"鹏华基金": { offsetX: 20, offsetY: 0 },
+			"平安基金": { offsetX: -40, offsetY: 20 },
+			"国投瑞银": { offsetX: -20, offsetY: 25 },
+			"博时基金/南方基金": { offsetX: -20, offsetY: 25 },
+			"同泰基金": { offsetX: -20, offsetY: 25 },
+			"尚正基金": { offsetX: 20, offsetY: 0 },
+			"宝盈基金": { offsetX: -50, offsetY: 0 },
+			"创金合信": { offsetX: 20, offsetY: 0 },
+			"恒生前海基金/红塔红土基金": { offsetX: -20, offsetY: 25 },
+			"信达澳亚": { offsetX: -20, offsetY: 20 },
+			"大成基金": { offsetX: -20, offsetY: 20 },
+			"红土创新": { offsetX: 20, offsetY: 0 },
+			"金鹰基金": { offsetX: 20, offsetY: 10 },
+			"前海联合基金": { offsetX: -60, offsetY: 0 },
+			
+            // ... 添加其他标签偏移量
+        };
+
+        function getAddressPoint(address, callback) {
+            var geocoder = new BMap.Geocoder();
+            geocoder.getPoint(address, function(point) {
+                callback(point);
+            });
+        }
+
+        function geocodeAndCache(address, callback) {
+            var cachedResult = localStorage.getItem(address);
+            if (cachedResult) {
+                callback(JSON.parse(cachedResult));
+            } else {
+                myGeo.getPoint(address, function(point) {
+                    var cachedResult = JSON.stringify(point);
+                    localStorage.setItem(address, cachedResult);
+                    callback(point);
+                }, "深圳市");
+            }
+        }
+
+        var addressesToCache = [
+             { address: "深圳嘉里建设广场3期31楼/1座21层、22层/3座7楼/A栋第二座17楼", name: "易方达基金/景顺长城/华润元大/摩根士丹利华鑫" },
+			{ address: "广州天河区珠江东路30号广州银行大厦42楼", name: "易方达基金" },
+			{ address: "广州海珠区琶洲大道东1号保利国际广场南塔31－33层",name: "广发基金"},
+			{ address: "广州天河区珠江东路28号越秀金融大厦30层",name: "金鹰基金"},
+			{ address: "广州天河区花城大道769号广州嘉昱中心10层",name: "百嘉基金"},
+			{ address: "深圳南山区海德三道1236号大成基金总部大厦5层、27-33层",name: "大成基金"},
+			{ address: "深圳福田区莲花街道福新社区鹏程一路9号广电金融中心38层", name: "长城基金"},
+			{ address: "深圳投行大厦11楼",name: "宝盈基金"},
+			{ address: "深圳福田区益田路5999号基金大厦22、23楼/33楼",name: "博时基金/南方基金"},
+			{ address: "深圳福华三路168号深圳国际商会中心43层",name: "鹏华基金"},
+			{ address: "深圳福田区益田路6009号新世界中心36楼",name: "安信基金"},
+			{ address: "深圳南山区海德三道1066号深创投广场48楼",name: "红土创新"},
+			{ address: "深圳市福田区生命保险大厦23楼",name: "生命保险资管"},
+			{ address: "深圳市南山区华润前海大厦A座37楼",name: "创金合信"},
+			{ address: "深圳市南山区航天科技广场A座28楼",name: "恒大人寿"},
+			{ address: "深圳深南大道4013号兴业银行大厦19-20层",name: "诺安基金"},
+			{ address: "广州珠江新城华夏路10号富力中心2908",name: "诺安基金"},
+			{ address: "深圳市南山区粤海街道科苑南路2666号中国华润大厦（春笋）10层",name: "信达澳亚"},
+			{ address: "深圳市南山区华润前海中心T1栋28F",name: "前海联合基金"},
+			{ address: "深圳市南山区桂湾四路197号前海华润金融中心T1栋（前海人寿大厦）51楼",name: "前海人寿保险"},
+			{ address: "深圳市福田区深南大道7006号万科富春东方大厦12楼",name: "前海开源基金"},
+			{ address: "深圳市福田区深南大道7088号招商银行大厦23层、28层",name: "招商基金"},
+			{ address: "深圳金田路荣超经贸中心46层",name: "国投瑞银"},
+			{ address: "深圳汉唐大厦14层",name: "融通基金"},
+			{ address: "深圳福田区益田路5033号平安金融中心34层",name: "平安基金"},
+			{ address: "深圳福田区八卦岭八卦四路安吉尔大厦24楼",name: "富荣基金"},
+			{ address: "深圳福田区太平金融大厦15楼2单元",name: "金信基金"},
+			{ address: "深圳金田路中洲大厦32楼3202室",name: "中融基金"},
+			{ address: "深圳福田区皇岗路5001号深业上城（南区）T2栋41层",name: "同泰基金"},
+			{ address: "福田区深南大道6008号特区报业大厦西区23层BC单元",name: "东方阿尔法"},
+			{ address: "深圳市前海深港合作区南山街道前海大道前海嘉里商务中心T2座10楼/四期1栋2301",name: "恒生前海基金/红塔红土基金"},
+			{ address: "深圳市福田区皇岗路5001号B座（T2栋）43楼4301",name: "博远基金"},
+			{ address: "深圳市福田区深业上城T2栋703-708", name: "尚正基金"},
+            // ... 添加其他需要缓存的地址
+        ];
+
+        for (var i = 0; i < addressesToCache.length; i++) {
+            var dataItem = addressesToCache[i];
+            geocodeAndCache(dataItem.address, function(point) {
+                dataItem.point = point;
+                addMarkerWithLabel(dataItem);
+            });
+        }
+
+        function addMarkerWithLabel(dataItem) {
+            getAddressPoint(dataItem.address, function (point) {
+                if (point) {
+                    var marker = new BMap.Marker(point);
+
+                    var labelChange = labelChanges[dataItem.name] || { offsetX: -20, offsetY: -20 };
+                    var label = new BMap.Label(dataItem.name, { offset: new BMap.Size(labelChange.offsetX, labelChange.offsetY) });
+                    label.setStyle({
+                        borderColor: "#808080",
+                        color: "#333",
+                        fontWeight: "bold",
+                        cursor: "pointer"
+                    });
+
+                    marker.setLabel(label);
+                    map.addOverlay(marker);
+
+                    var infoWindow = new BMap.InfoWindow(dataItem.name + ' - ' + dataItem.address, { offset: new BMap.Size(0, -20), width: 200 });
+                    marker.addEventListener('click', function (e) {
+                        var p = e.target;
+                        var point = new BMap.Point(p.getPosition().lng, p.getPosition().lat);
+                        infoWindow.setContent(dataItem.name + ' - ' + dataItem.address);
+                        map.openInfoWindow(infoWindow, point);
+                    });
+                }
+            });
+        }
+
+        for (var i = 0; i < data.length; i++) {
+            addMarkerWithLabel(data[i]);
+        }
+    </script>
+</body>
+</html>
